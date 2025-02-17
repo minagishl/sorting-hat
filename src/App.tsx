@@ -23,6 +23,16 @@ const SORTING_MESSAGES = [
   'そうだな...君の運命の寮は...',
 ];
 
+// Simple string hash function (always returns the same hash for the same input)
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 function App() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [crop, setCrop] = useState<Crop>({
@@ -82,13 +92,19 @@ function App() {
   };
 
   const startSorting = () => {
+    if (!croppedImage) return;
+
+    // Calculate the hash value, and determine the house index using the absolute value
+    const hash = Math.abs(hashString(croppedImage));
+    const houseIndex = hash % HOUSES.length;
+
     setIsSorting(true);
     setMessageIndex(0);
     const interval = setInterval(() => {
       setMessageIndex((prev) => {
         if (prev >= SORTING_MESSAGES.length - 1) {
           clearInterval(interval);
-          setSelectedHouse(HOUSES[Math.floor(Math.random() * HOUSES.length)]);
+          setSelectedHouse(HOUSES[houseIndex]);
           return prev;
         }
         return prev + 1;
