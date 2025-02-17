@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { toPng } from 'html-to-image';
 
 const HOUSES = [
   'グリフィンドール',
@@ -49,7 +48,6 @@ function App() {
   const [messageIndex, setMessageIndex] = useState(-1);
   const [selectedHouse, setSelectedHouse] = useState<string | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const [hiddedButton, setHiddedButton] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -112,20 +110,6 @@ function App() {
         return prev + 1;
       });
     }, 2000);
-  };
-
-  const handleSaveImage = async () => {
-    if (!croppedImage) return;
-    setHiddedButton(true);
-
-    const png = await toPng(
-      document.querySelector('#root > div') as HTMLElement
-    );
-    const link = document.createElement('a');
-    link.download = `sorting_hat_${new Date().getTime()}.png`;
-    link.href = png!;
-    link.click();
-    setHiddedButton(false);
   };
 
   return (
@@ -214,16 +198,6 @@ function App() {
                     >
                       {selectedHouse}!
                     </p>
-                    {!hiddedButton && (
-                      <button
-                        onClick={handleSaveImage}
-                        className="mt-4 transition-colors"
-                      >
-                        <div className="p-4 font-semibold bg-zinc-50 rounded-lg hover:bg-zinc-100 text-black">
-                          画像を保存
-                        </div>
-                      </button>
-                    )}
                   </div>
                 )}
               </div>
